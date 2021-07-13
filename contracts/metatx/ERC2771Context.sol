@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 
 import "../utils/Context.sol";
 
-/*
+/**
  * @dev Context variant with ERC2771 support.
  */
 abstract contract ERC2771Context is Context {
