@@ -3,6 +3,8 @@
 ## Unreleased
 
  * `ERC2771Context`: use private variable from storage to store the forwarder address. Fixes issues where `_msgSender()` was not callable from constructors. ([#2754](https://github.com/OpenZeppelin/openzeppelin-contracts/pull/2754))
+ * `ECDSA`: add `tryRecover` functions that will not throw if the signature is invalid, and will return an error flag instead. ([#2661](https://github.com/OpenZeppelin/openzeppelin-contracts/pull/2661))
+ * `SignatureChecker`: Reduce gas usage of the `isValidSignatureNow` function for the "signature by EOA" case. ([#2661](https://github.com/OpenZeppelin/openzeppelin-contracts/pull/2661))
 
 ## 4.2.0 (2021-06-30)
 
