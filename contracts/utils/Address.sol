@@ -129,7 +129,7 @@ library Address {
         require(isContract(target), "Address: call to non-contract");
 
         (bool success, bytes memory returndata) = target.call{value: value}(data);
-        return _verifyCallResult(success, returndata, errorMessage);
+        return verifyCallResult(success, returndata, errorMessage);
     }
 
     /**
@@ -156,7 +156,7 @@ library Address {
         require(isContract(target), "Address: static call to non-contract");
 
         (bool success, bytes memory returndata) = target.staticcall(data);
-        return _verifyCallResult(success, returndata, errorMessage);
+        return verifyCallResult(success, returndata, errorMessage);
     }
 
     /**
@@ -183,14 +183,20 @@ library Address {
         require(isContract(target), "Address: delegate call to non-contract");
 
         (bool success, bytes memory returndata) = target.delegatecall(data);
-        return _verifyCallResult(success, returndata, errorMessage);
+        return verifyCallResult(success, returndata, errorMessage);
     }
 
-    function _verifyCallResult(
+    /**
+     * @dev Tool to verifies that a low level call was successful, and revert if it wasn't, either by bubbling the
+     * revert reason using the provided one.
+     *
+     * _Available since v4.3._
+     */
+    function verifyCallResult(
         bool success,
         bytes memory returndata,
         string memory errorMessage
-    ) private pure returns (bytes memory) {
+    ) internal pure returns (bytes memory) {
         if (success) {
             return returndata;
         } else {

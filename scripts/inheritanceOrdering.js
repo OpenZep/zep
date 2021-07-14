@@ -21,16 +21,22 @@ for (const artifact of artifacts) {
     }
   }
 
-  graphlib.alg.findCycles(graph).forEach(([ c1, c2 ]) => {
-    console.log(`Conflict between ${names[c1]} and ${names[c2]} detected in the following dependency chains:`);
-    linearized
-      .filter(chain => chain.includes(parseInt(c1)) && chain.includes(parseInt(c2)))
-      .forEach(chain => {
-        const comp = chain.indexOf(c1) < chain.indexOf(c2) ? '>' : '<';
-        console.log(`- ${names[c1]} ${comp} ${names[c2]}: ${chain.reverse().map(id => names[id]).join(', ')}`);
-      });
-    process.exitCode = 1;
-  });
+  /// graphlib.alg.findCycles will not find minimal cycles.
+  /// We are only interested int cycles of lengths 2 (needs proof)
+  graph.nodes().forEach((x, i, nodes) => nodes
+    .slice(i + 1)
+    .filter(y => graph.hasEdge(x, y) && graph.hasEdge(y, x))
+    .map(y => {
+      console.log(`Conflict between ${names[x]} and ${names[y]} detected in the following dependency chains:`);
+      linearized
+        .filter(chain => chain.includes(parseInt(x)) && chain.includes(parseInt(y)))
+        .forEach(chain => {
+          const comp = chain.indexOf(parseInt(x)) < chain.indexOf(parseInt(y)) ? '>' : '<';
+          console.log(`- ${names[x]} ${comp} ${names[y]} in ${names[chain.find(Boolean)]}`);
+          // console.log(`- ${names[x]} ${comp} ${names[y]}: ${chain.reverse().map(id => names[id]).join(', ')}`);
+        });
+      process.exitCode = 1;
+    }));
 }
 
 if (!process.exitCode) {

@@ -3,9 +3,63 @@
 [.readme-notice]
 NOTE: This document is better viewed at https://docs.openzeppelin.com/contracts/api/governance
 
-This directory includes primitives for on-chain governance. We currently only offer the {TimelockController} contract, that can be used as a component in a governance system to introduce a delay between a proposal and its execution.
+This directory includes primitives for on-chain governance.
+
+== Governor
+
+The {Governor} contract provides primitive to set an on-chain voting system similar to https://compound.finance/docs/governance[Compound's Governor Alpha & Bravo].
+
+Similarly to our other contracts, it is customizable through inheritance and comes with extensions:
+
+* {GovernorTimelockController}: A {Governor} extension that performs executions through a {TimelockController}. This requires a successful proposal to be queued before then can be executed. The {TimelockController} will enforce a delay between the queueing and the execution. With this module, proposals are executed by the external {TimelockController} contract, which would have to hold the assets that are being governed.
+
+* {GovernorTimelockCompound}: A {Governor} extension that performs executions through a compound https://github.com/compound-finance/compound-protocol/blob/master/contracts/Timelock.sol[`Timelock`]. This requires a successful proposal to be queued before then can be executed. The `Timelock` will enforce a delay between the queueing and the execution. With this module, proposals are executed by the external `Timelock` contract, which would have to hold the assets that are being governed.
+
+* {GovernorCountingSimple}: A simple voting mechanism for {Governor} with support 3 vote options: Against, For and Abstain.
+
+* {GovernorVotes}: Binding to extract voting weight from an {ERC20Votes} token.
+
+* {GovernorVotesQuorumFractional}: Binding to extract voting weight from an {ERC20Votes} token and set the quorum as a fraction of the (snapshoted) total token supply.
+
+* {GovernorVotesComp}: Binding to extract voting weight from a Comp or {ERC20VotesComp} token.
+
+In addition to modules, the {Governor} requires a few virtual functions to be implemented to your particular specifications:
+
+* <<Governor-votingOffset-,`votingOffset()`>>: Delay (number of blocks), between the proposal, is submitted and the snapshot block used for voting. This can be used to enforce a delay after a proposal is published for users to buy tokens, or delegate their votes (default: 0).
+* <<Governor-votingDuration-,`votingDuration()`>>: Delay (in seconds), between the proposal, is submitted and the vote ends.
+* <<Governor-quorum-uint256-,`quorum(uint256 blockNumber)`>>: Quorum required for a proposal to be successful. This function includes a `blockNumber` argument so the quorum can adapt through time, for example, to follow a token's `totalSupply`.
+
+Note: Function of the {Governor} contract does NOT include access control. If you want to restrict access (for example to require a minimum balance to submit a proposal), you should add these checks by overloading the particular functions. For security reasons, the {Governor-_cancel} method is internal, and you will have to expose it (which the right access control mechanism) yourself if this is a mechanism you need.
+
+Events emitted by the {Governor} contract are compatible with Compound's `GovernorBravo`. Additionnaly, function compatibility can be added using the {GovernorCompatibilityBravo} compatibility layer. This layer includes a voting system but does not include token bindings. This layer also requiers a timelock module (either {GovernorTimelockController} or {GovernorTimelockCompound}).
+
+=== Core
+
+{{IGovernor}}
+
+{{Governor}}
+
+=== Extensions
+
+{{GovernorTimelockController}}
+
+{{GovernorTimelockCompound}}
+
+{{GovernorCountingSimple}}
+
+{{GovernorVotes}}
+
+{{GovernorVotesQuorumFractional}}
+
+{{GovernorVotesComp}}
+
+=== Compatibility
+
+{{GovernorCompatibilityBravo}}
 
 == Timelock
+
+In a governance systems, the {TimelockController} contract is in carge of introducing a delay between a proposal and its execution. It can be used with or without a {Governor}.
 
 {{TimelockController}}
 
@@ -27,7 +81,7 @@ This directory includes primitives for on-chain governance. We currently only of
 [[timelock-operation]]
 ==== Operation structure
 
-Operation executed by the xref:api:governance.adoc#TimelockController[`TimelockControler`] can contain one or multiple subsequent calls. Depending on whether you need to multiple calls to be executed atomically, you can either use simple or batched operations.
+Operation executed by the xref:api:governance.adoc#TimelockController[`TimelockController`] can contain one or multiple subsequent calls. Depending on whether you need to multiple calls to be executed atomically, you can either use simple or batched operations.
 
 Both operations contain:
 
