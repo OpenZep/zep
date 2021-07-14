@@ -33,6 +33,10 @@ contract EnumerableBytes32SetMock {
     function at(uint256 index) public view returns (bytes32) {
         return _set.at(index);
     }
+
+    function values() public view returns (bytes32[] memory) {
+        return _set.values();
+    }
 }
 
 // AddressSet
@@ -64,6 +68,10 @@ contract EnumerableAddressSetMock {
     function at(uint256 index) public view returns (address) {
         return _set.at(index);
     }
+
+    function values() public view returns (address[] memory) {
+        return _set.values();
+    }
 }
 
 // UintSet
@@ -94,5 +102,9 @@ contract EnumerableUintSetMock {
 
     function at(uint256 index) public view returns (uint256) {
         return _set.at(index);
+    }
+
+    function values() public view returns (uint256[] memory) {
+        return _set.values();
     }
 }

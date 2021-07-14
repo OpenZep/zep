@@ -130,6 +130,13 @@ library EnumerableSet {
         return set._values[index];
     }
 
+    /**
+     * @dev Return the entier set in an array
+     */
+    function _values(Set storage set) private view returns (bytes32[] memory) {
+        return set._values;
+    }
+
     // Bytes32Set
 
     struct Bytes32Set {
@@ -182,6 +189,13 @@ library EnumerableSet {
      */
     function at(Bytes32Set storage set, uint256 index) internal view returns (bytes32) {
         return _at(set._inner, index);
+    }
+
+    /**
+     * @dev Return the entier set in an array
+     */
+    function values(Bytes32Set storage set) internal view returns (bytes32[] memory) {
+        return _values(set._inner);
     }
 
     // AddressSet
@@ -238,6 +252,20 @@ library EnumerableSet {
         return address(uint160(uint256(_at(set._inner, index))));
     }
 
+    /**
+     * @dev Return the entier set in an array
+     */
+    function values(AddressSet storage set) internal view returns (address[] memory) {
+        bytes32[] memory store = _values(set._inner);
+        address[] memory result;
+
+        assembly {
+            result := store
+        }
+
+        return result;
+    }
+
     // UintSet
 
     struct UintSet {
@@ -290,5 +318,19 @@ library EnumerableSet {
      */
     function at(UintSet storage set, uint256 index) internal view returns (uint256) {
         return uint256(_at(set._inner, index));
+    }
+
+    /**
+     * @dev Return the entier set in an array
+     */
+    function values(UintSet storage set) internal view returns (uint256[] memory) {
+        bytes32[] memory store = _values(set._inner);
+        uint256[] memory result;
+
+        assembly {
+            result := store
+        }
+
+        return result;
     }
 }
